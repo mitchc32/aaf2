@@ -63,7 +63,7 @@ class Response {
 	 * created to generate the dynamica navigation of a website. This plugin may
 	 * a specific javascript or css file that it requires in certain instances.
 	 * This will allow the plugin to include the required assets without having
-	 * to put thing in the base views on every page.
+	 * to put thing in the base templates on every page.
 	 * 
 	 * @param mixed $files
 	 * @param string $type js or css; only required if extension not included

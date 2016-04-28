@@ -315,7 +315,7 @@ class Routes {
 
 		/* validate the request method */
 		if (App::valid('method', $route) && strtolower(trim($route['method'])) != strtolower(trim($_SERVER['REQUEST_METHOD']))) {
-			return Response::getError(405, 'Route does not allow '.$_SERVER['REQUEST_METHOD'].' requests.');
+			return Response::getError(405, 'Route only allows '.strtoupper(trim($route['method'])).' requests.');
 		}
 		
 		/* process the before queue */
