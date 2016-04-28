@@ -4,10 +4,18 @@ namespace AAF\Controller;
 
 use AAF\App as App;
 use AAF\Http\Response as Response;
+use AAF\Exceptions\PluginException as PluginException;
+use AAF\Twig\TwigEnvExtension as TwigEnvExtension;
 
 /**
  * Plugin
- * 
+ *
+ * The primary route handler and base controller class.
+ *
+ * NOTE ON ASSETS:
+ *
+ * Assets (CSS/JS files) should be added by using Request::addAssets(['/assets/js/file.js', '/assets/css/file.css');
+ *
  * @package AAF
  * @author Mitchell Cannon
  * @copyright 2016
@@ -19,7 +27,7 @@ class Plugin {
 	 * @var Twig_Environment $twig
 	 */
 	public $twig = false;
-	
+
 	/**
 	 * Plugin::__construct()
 	 * 
@@ -75,7 +83,7 @@ class Plugin {
 	public static function create($src, $config=array()) {
 		/* make sure we have a name */
 		if (empty($src)) {
-			throw new \Exception('Invalid source provided for plugin factory "'.$src.'"');
+			throw new PluginException('Invalid source provided for plugin factory "'.$src.'"');
 		}
 		
 		/* set the file */
@@ -105,7 +113,7 @@ class Plugin {
 		
 		/* stop here if not found */
 		if (!$file) {
-			throw new \Exception('Invalid source provided for plugin factory "'.$src.'"');
+			throw new PluginException('Invalid source provided for plugin factory "'.$src.'"');
 		}
 		
 		/* include the file */
@@ -113,7 +121,7 @@ class Plugin {
 		
 		/* make sure the class exists */
 		if (!class_exists($name)) {
-			throw new \Exception('Invalid source provided for plugin factory "'.$src.'"');
+			throw new PluginException('Invalid source provided for plugin factory "'.$src.'"');
 		}
 		
 		return new $name($config);
@@ -143,7 +151,7 @@ class Plugin {
 		));
 		
 		/* add in extensions */
-		$twig->addExtension(new Architect_Twig_Ext());
+		$twig->addExtension(new TwigEnvExtension());
 		
 		/* done */
 		return $twig;

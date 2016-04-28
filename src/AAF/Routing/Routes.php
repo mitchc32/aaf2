@@ -5,6 +5,8 @@ namespace AAF\Routing;
 use AAF\App as App;
 use AAF\Security\User as User;
 use AAF\Http\Response as Response;
+use AAF\Exceptions\RouteException as RouteException;
+use AAF\Controller\Plugin as Plugin;
 
 /**
  * Routes
@@ -43,12 +45,12 @@ class Routes {
 	public static function loadFile($file) {
 		/* stop if empty */
 		if (empty($file)) {
-			throw new \Exception('Empty routes file provided.');
+			throw new RouteException('Empty routes file provided.');
 		}
 		
 		/* make sure the file exists and can be read */
 		if (!file_exists($file) || !is_readable($file)) {
-			throw new \Exception('Routes file, '.$file.', either does not exist or is not readable.');
+			throw new RouteException('Routes file, '.$file.', either does not exist or is not readable.');
 		}
 		
 		/* get the file type based on the extension */
@@ -70,7 +72,7 @@ class Routes {
 					foreach ($routes as $url=>$opts) {
 						/* validate */
 						if (empty($url) || empty($opts) || !App::valid('handler', $opts)) {
-							throw new \Exception('Invalid route provided for "'.$url.'"');
+							throw new RouteException('Invalid route provided for "'.$url.'"');
 						}
 						
 						/* add it */
@@ -80,7 +82,7 @@ class Routes {
 				break;
 			
 			default:
-				throw new \Exception('Invalid routes file type provided. Only PHP and JSON are accepted.');
+				throw new RouteException('Invalid routes file type provided. Only PHP and JSON are accepted.');
 				break;
 		}
 	}
@@ -112,7 +114,7 @@ class Routes {
 	public static function loadJSON($json) {
 		/* make sure the contents aren't empty */
 		if (empty($json) || !is_string($json)) {
-			throw new \Exception('Invalid routes JSON string provided.');
+			throw new RouteException('Invalid routes JSON string provided.');
 		}
 		
 		/* try to parse it */
@@ -120,14 +122,14 @@ class Routes {
 		
 		/* validate the data */
 		if (empty($json)) {
-			throw new \Exception('Could not parse the provided routes JSON string.');
+			throw new RouteException('Could not parse the provided routes JSON string.');
 		}
 		
 		/* load the routes */
 		foreach ($json as $url=>$opts) {
 			/* validate */
 			if (empty($url) || empty($opts) || !App::valid('handler', $opts)) {
-				throw new \Exception('Invalid route provided for "'.$url.'"');
+				throw new RouteException('Invalid route provided for "'.$url.'"');
 			}
 			
 			/* add it */
@@ -161,12 +163,12 @@ class Routes {
 	public static function add($route, $handler, $opts=[]) {
 		/* validate the route */
 		if (empty($route) || !is_string($route)) {
-			throw new \Exception('Invalid route provided. Route URLs must be a string and at least one character.');
+			throw new RouteException('Invalid route provided. Route URLs must be a string and at least one character.');
 		}
 		
 		/* validate the handler */
 		if (!is_string($handler) && !is_callable($handler)) {
-			throw new \Exception('Invalid route handler provided for '.$route.'. Handlers must be either a callable function or a string reference to a plugin.');
+			throw new RouteException('Invalid route handler provided for '.$route.'. Handlers must be either a callable function or a string reference to a plugin.');
 		}
 		
 		/* create the regex to match the url for the route */
@@ -198,7 +200,7 @@ class Routes {
 	public static function addBeforeExecute($callback) {
 		/* validate the callback */
 		if (!is_callable($callback)) {
-			throw new \Exception('Before queue provided callback is not callable.');
+			throw new RouteException('Before queue provided callback is not callable.');
 		}
 		
 		/* add it to the queue */
@@ -221,7 +223,7 @@ class Routes {
 	public static function addAfterExecute($callback) {
 		/* validate the callback */
 		if (!is_callable($callback)) {
-			throw new \Exception('After queue provided callback is not callable.');
+			throw new RouteException('After queue provided callback is not callable.');
 		}
 		
 		/* add it to the queue */
@@ -263,7 +265,7 @@ class Routes {
 	public static function runUrl($url) {
 		/* make sure we have some routes */
 		if (empty(self::$routes)) {
-			throw new \Exception('No routes have been defined for the application.');
+			throw new RouteException('No routes have been defined for the application.');
 		}
 		
 		/* check each */
@@ -309,6 +311,11 @@ class Routes {
 		/* check for a security flag on the route against the user's session */
 		if (App::valid('security', $route) && !User::isAuthorized($route['security'])) {
 			return Response::getError(503);
+		}
+
+		/* validate the request method */
+		if (App::valid('method', $route) && strtolower(trim($route['method'])) != strtolower(trim($_SERVER['REQUEST_METHOD']))) {
+			return Response::getError(405, 'Route only allows '.strtoupper(trim($route['method'])).' requests.');
 		}
 		
 		/* process the before queue */
@@ -412,7 +419,7 @@ class Routes {
 			case (is_string($route['handler']) && !empty($route['handler'])):
 				/* use the plugin factory method to create an instance of the handler
 				using the route details */
-				$plugin = \AAF\Controller\Plugin::create($route['handler'], $route);
+				$plugin = Plugin::create($route['handler'], $route);
 				
 				/* Get the action from the route, but make sure to remove any special
 				characters from it in case this came from the URL. We want to make sure

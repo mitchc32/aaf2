@@ -168,14 +168,15 @@ class Response {
 	 * Get an error page with the provided HTTP Status Code.
 	 * 
 	 * @param integer $httpCode
+	 * @param string $msg error details/message
 	 * @return string
 	 */
-	public static function getError($httpCode=404) {
+	public static function getError($httpCode=404, $msg='') {
 		/* set the code */
 		http_response_code((int) $httpCode);
 		
 		/* set the content */
-		return '<h1>Oh no! '.$httpCode.'!</h1>';
+		return '<h1>Oh no! '.$httpCode.'!</h1><p>'.$msg.'</p>';
 	}
 	
 	/**

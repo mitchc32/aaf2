@@ -3,6 +3,7 @@
 namespace AAF\Database;
 
 use AAF\App as App;
+use AAF\Exceptions\DatabaseException as DatabaseException;
 
 /**
  * MDB
@@ -39,7 +40,7 @@ class MDB {
 		if (!self::$initialized) {
 			/* make sure we have database settings */
 			if (!App::valid('database', App::$env) || !App::valid(['host', 'port', 'db'], App::$env['database'])) {
-				throw new \Exception('Invalid or missing parameters for MDB. Required: host, port, db');
+				throw new DatabaseException('Invalid or missing parameters for MDB. Required: host, port, db');
 			}
 			
 			/* set a shortcut */
@@ -54,7 +55,7 @@ class MDB {
 		
 		/* make sure the method exists */
 		if (!method_exists(__CLASS__, $method)) {
-			throw new \Exception('Invalid method requested from MDB.');
+			throw new DatabaseException('Invalid method requested from MDB.');
 		}
 		
 		/* run the method */
