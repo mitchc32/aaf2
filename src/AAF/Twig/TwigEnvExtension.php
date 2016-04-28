@@ -2,6 +2,8 @@
 
 namespace AAF\Twig;
 
+use AAF\App as App;
+use AAF\Http\Response as Response;
 use AAF\Controller\Plugin as Plugin;
 
 class TwigEnvExtension extends \Twig_Extension {
@@ -11,16 +13,14 @@ class TwigEnvExtension extends \Twig_Extension {
     }
 	
     public function getGlobals() {
-        /* get the defined constants */
-        $cons = get_defined_constants(true);
-		
-		/* set the available items */
+        /* set the available items */
 		return [
-            '_url' => \AAF\Http\Response::$url,
+            'REQUEST' => [
+				'url' => Response::$url
+			],
             'SESSION' => (isset($_SESSION)) ? $_SESSION : [],
             'SERVER' => $_SERVER,
-            'CONSTANTS' => $cons['user'],
-            'input' => \AAF\App::$input
+            'INPUT' => App::$input
         ];
     }
     

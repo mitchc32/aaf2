@@ -21,9 +21,12 @@ class App {
 	public static $env = [
 		'timezone'				=> 'America/Chicago',
 		'sessionExpires'		=> '+6 hour',
-		'defaultHandlerPath'	=> 'plugins/',
 		'forceAssetInjection'	=> false,
-		'assetBasePath'			=> ''
+		'paths'					=> [
+			'root'				=> '',
+			'views'				=> '',
+			'plugins'			=> ''
+		]
 	];
 	
 	/**
