@@ -1,7 +1,7 @@
 <?php
 
 /* load the composer file */
-//require __DIR__.'/vendor/autoload.php';
+require __DIR__.'/vendor/autoload.php';
 
 /* ensure the session is active */
 if (session_id() == '') {

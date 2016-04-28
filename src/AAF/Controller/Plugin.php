@@ -35,7 +35,11 @@ class Plugin {
 	 * @return void
 	 */
 	public function __construct($config=[]) {
-		
+		/* set properties from the config */
+		$this->setConfig($config);
+
+		/* setup the twig template engine */
+		$this->twig = $this->_createTwigEnv();
 	}
 	
 	/**
@@ -60,17 +64,29 @@ class Plugin {
 	 * @return string
 	 */
 	public function render($vars, $template) {
-		/* set defaults */
-		$base = [
-			
-		];
-		
-		/* setup the twig environment */
-		$this->twig = $this->_createTwigEnv([
-			'tmp' => file_get_contents($template)
-		]);
+		return (string) $this->twig->render($template, $vars);
 	}
-	
+
+	/**
+	 * Plugin::setConfig
+	 *
+	 * @param array $config
+	 * @return bool
+	 */
+	public function setConfig($config=[]) {
+		if (!is_array($config) || empty($config)) {
+			return false;
+		}
+
+		foreach ($config as $k=>$v) {
+			if (property_exists($this, $k)) {
+				$this->$k = $v;
+			}
+		}
+
+		return true;
+	}
+
 	/**
 	 * Plugin::create()
 	 * 
@@ -89,30 +105,18 @@ class Plugin {
 		/* set the file */
 		$info = pathinfo($src);
 		$name = $info['filename'];
-		$files = array();
-		
+
 		/* check several folders automatically */
 		if ($info['dirname'] == '' || $info['dirname'] == '.') {
 			/* check the registered plugin folders */
-			$files[] = rtrim(App::$env['defaultHandlerPath'], '/').'/'.$info['basename'].((!isset($info['extension'])) ? '.php' : '');
+			$file = rtrim(App::$env['paths']['plugins'], '/').'/'.$info['basename'].((!isset($info['extension'])) ? '.php' : '');
 		} else {
 			/* just use the provided source */
-			$files[] = $src;
+			$file = $src;
 		}
-		
-		/* look for a file */
-		foreach ($files as $file) {
-			/* stop here if the file exists */
-			if (file_exists($file)) {
-				break;
-			}
-			
-			/* clear it so we don't have to do another IO command to test it later */
-			$file = false;
-		}
-		
+
 		/* stop here if not found */
-		if (!$file) {
+		if (!file_exists($file)) {
 			throw new PluginException('Invalid source provided for plugin factory "'.$src.'"');
 		}
 		
@@ -130,19 +134,14 @@ class Plugin {
 	/**
 	 * Plugin::_createTwigEnv()
 	 * 
-	 * @param mixed $loaderConfig
 	 * @return Twig_Environment
 	 */
-	protected function _createTwigEnv($loaderConfig=array()) {
+	protected function _createTwigEnv() {
 		/* create twig loader */
-		if (empty($loaderConfig)) {
-			$loader = new Twig_Loader_Array($this->template);
-		} else {
-			$loader = new Twig_Loader_Array($loaderConfig);
-		}
+		$loader = new \Twig_Loader_Filesystem(App::$env['paths']['views']);
 		
 		/* create the environment */
-		$twig = new Twig_Environment($loader, array(
+		$twig = new \Twig_Environment($loader, array(
 			'cache' => false,
 			'charset' => 'utf-8',
 			'auto_reload' => 1,
@@ -150,7 +149,7 @@ class Plugin {
 			'autoescape' => false
 		));
 		
-		/* add in extensions */
+		/* add in the custom AAF extension */
 		$twig->addExtension(new TwigEnvExtension());
 		
 		/* done */
