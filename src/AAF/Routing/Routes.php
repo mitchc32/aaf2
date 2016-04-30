@@ -6,7 +6,7 @@ use AAF\App as App;
 use AAF\Security\User as User;
 use AAF\Http\Response as Response;
 use AAF\Exceptions\RouteException as RouteException;
-use AAF\Controller\Plugin as Plugin;
+use AAF\Controllers\Plugin as Plugin;
 
 /**
  * Routes

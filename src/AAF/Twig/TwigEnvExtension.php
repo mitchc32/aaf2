@@ -4,7 +4,7 @@ namespace AAF\Twig;
 
 use AAF\App as App;
 use AAF\Http\Response as Response;
-use AAF\Controller\Plugin as Plugin;
+use AAF\Controllers\Plugin as Plugin;
 
 class TwigEnvExtension extends \Twig_Extension {
 	

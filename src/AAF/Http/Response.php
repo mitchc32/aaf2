@@ -201,7 +201,7 @@ class Response {
 	 */
 	protected static function _injectProfiler($content) {
 		/* create the profiler */
-		$profiler = new \AAF\Controller\Profiler([
+		$profiler = new \AAF\Controllers\Profiler([
 			'viewPath' => rtrim(App::$env['aaf'], '/').'/Views'
 		]);
 
