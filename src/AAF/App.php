@@ -19,13 +19,16 @@ class App {
 	 * @var mixed $env Environment config array/details
 	 */
 	public static $env = [
+		'aaf'					=> __DIR__,
 		'timezone'				=> 'America/Chicago',
 		'sessionExpires'		=> '+6 hour',
 		'forceAssetInjection'	=> false,
+		'profile'				=> false,
 		'paths'					=> [
 			'root'				=> '',
 			'views'				=> '',
-			'plugins'			=> ''
+			'plugins'			=> '',
+			'assets'			=> ''
 		]
 	];
 	
@@ -73,8 +76,8 @@ class App {
 		}
 		
 		/* try to merge the all and $envKey */
-		self::$env = array_merge(self::$env, $json['all'], $json[$envKey]);
-		
+		self::$env = array_replace_recursive(self::$env, $json['all'], $json[$envKey]);
+
 		/* set the timezone */
 		date_default_timezone_set(self::$env['timezone']);
 		

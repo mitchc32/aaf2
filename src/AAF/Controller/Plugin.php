@@ -29,6 +29,11 @@ class Plugin {
 	public $twig = false;
 
 	/**
+	 * @var string $viewPath overwrites the global environment path if provided
+	 */
+	public $viewPath = '';
+
+	/**
 	 * Plugin::__construct()
 	 * 
 	 * @param mixed $config
@@ -50,7 +55,7 @@ class Plugin {
 	 * @return string
 	 */
 	public function _default() {
-		return '<h1>Plugin Default Function</h1><p>You have reached the default function for the AAF\Controller\Plugin class.</p>';
+		throw new PluginException('You have reached the default function for the AAF\Controller\Plugin class. Please define a _default() method for "'.__CLASS__.'".');
 	}
 	
 	/**
@@ -137,8 +142,11 @@ class Plugin {
 	 * @return Twig_Environment
 	 */
 	protected function _createTwigEnv() {
+		/* set the path */
+		$path = (!empty($this->viewPath) && is_string($this->viewPath)) ? $this->viewPath : App::$env['paths']['views'];
+
 		/* create twig loader */
-		$loader = new \Twig_Loader_Filesystem(App::$env['paths']['views']);
+		$loader = new \Twig_Loader_Filesystem($path);
 		
 		/* create the environment */
 		$twig = new \Twig_Environment($loader, array(

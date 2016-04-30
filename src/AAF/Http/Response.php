@@ -41,12 +41,9 @@ class Response {
 	public static function create() {
 		/* process the route */
 		$content = Routes::runRequestUrl();
-		
-		/* inject the css, js, scripts and styles */
-		$content = self::_injectAssets($content);
-		
+
 		/* show the content */
-		echo $content;
+		return self::_inject($content);
 	}
 	
 	/**
@@ -72,7 +69,7 @@ class Response {
 	public static function addAssets($files, $type='') {
 		/* set defaults */
 		$type = strtolower(trim($type));
-		$base = App::$env['assetBasePath'];
+		$base = App::$env['paths']['assets'];
 		$list = array();
 		
 		/* standardize the $files property so that it is always an array of files to
@@ -86,7 +83,7 @@ class Response {
 			$host = parse_url($file, PHP_URL_HOST);
 			
 			/* check to see if we need to add in a domain to the file url */
-			$file = (empty($host)) ? $base.'/'.ltrim($file, '/') : $file;
+			$file = (empty($host)) ? rtrim($base, '/').'/'.ltrim($file, '/') : $file;
 			
 			/* if a specific type is provided, use that. otherwise use the file
 			extension as the default */
@@ -127,7 +124,7 @@ class Response {
 		}
 		
 		/* strip out any script tags */
-		$script = preg_replace(['\<script\s*.*?\>', '/\<\/script\>/'], ['', ''], $script);
+		$script = preg_replace(['/\<script\s*.*?\>/', '/\<\/script\>/'], ['', ''], $script);
 		
 		/* append to the list */
 		self::$assets['script'] .= "\n".$script."\n";
@@ -153,10 +150,10 @@ class Response {
 		}
 		
 		/* strip out any script tags */
-		$style = preg_replace(['\<style\s*.*?\>', '/\<\/style\>/'], ['', ''], $style);
+		$style = preg_replace(['/\<style\s*.*?\>/', '/\<\/style\>/'], ['', ''], $style);
 		
 		/* append to the list */
-		self::$assets['styles'] .= "\n".$style."\n";
+		self::$assets['style'] .= "\n".$style."\n";
 		
 		/* done */
 		return true;
@@ -176,7 +173,46 @@ class Response {
 		http_response_code((int) $httpCode);
 		
 		/* set the content */
-		return '<h1>Oh no! '.$httpCode.'!</h1><p>'.$msg.'</p>';
+		return self::_inject('<h1>Oh no! '.$httpCode.'!</h1><p>'.$msg.'</p>');
+	}
+
+	/**
+	 * Response::_inject()
+	 *
+	 * Inject additional assets and content into the response before finalizing.
+	 *
+	 * @param $content
+	 * @return string
+	 */
+	protected static function _inject($content) {
+		/* add in the profile code if profile is true in the application environment */
+		$content = (App::valid('profile', App::$env)) ? self::_injectProfiler($content) : $content;
+
+		/* inject the css, js, scripts and styles */
+		return self::_injectAssets($content);
+	}
+
+	/**
+	 * Response::_injectProfiler()
+	 *
+	 * Inject the profiler into the response content.
+	 *
+	 * @return void
+	 */
+	protected static function _injectProfiler($content) {
+		/* create the profiler */
+		$profiler = new \AAF\Controller\Profiler([
+			'viewPath' => rtrim(App::$env['aaf'], '/').'/Views'
+		]);
+
+		/* check to see if this is HTML content with a body tag */
+		if (preg_match('/\<\/body\>/', $content)) {
+			$content = preg_replace('/\<\/body\>/', $profiler->_default().'</body>', $content);
+		} else {
+			$content .= $profiler->_default();
+		}
+
+		return $content;
 	}
 	
 	/**
@@ -192,7 +228,7 @@ class Response {
 		$force = App::$env['forceAssetInjection'];
 		$js = '';
 		$css = '';
-		
+
 		/* create the js */
 		if (!empty(self::$assets['js']) && is_array(self::$assets['js'])) {
 			foreach(self::$assets['js'] as $path => $v) {
@@ -211,15 +247,15 @@ class Response {
 			}
 		}
 		
-		if (!empty(self::$assets['styles']) && is_string(self::$assets['styles'])) {
-			$css .= "<style>\n".self::$assets['styles']."\n</style>\n";
+		if (!empty(self::$assets['style']) && is_string(self::$assets['style'])) {
+			$css .= "<style>\n".self::$assets['style']."\n</style>\n";
 		}
-		
+
 		/* insert the js */
 		if (!empty($js)) {
 			/* check for a closing body tag */
-			if (preg_match('</body>', $content)) {
-				preg_replace('/\<\/body\>/', $js.'</body>', $content);
+			if (preg_match('/\<\/body\>/', $content)) {
+				$content = preg_replace('/\<\/body\>/', $js.'</body>', $content);
 			} elseif ($force) {
 				$content .= "\n".$js;
 			}
@@ -228,8 +264,8 @@ class Response {
 		/* insert the js */
 		if (!empty($css)) {
 			/* check for a closing head tag */
-			if (preg_match('</head>', $content)) {
-				preg_replace('/\<\/head\>/', $css.'</head>', $content);
+			if (preg_match('/\<\/head\>/', $content)) {
+				$content = preg_replace('/\<\/head\>/', $css.'</head>', $content);
 			} elseif ($force) {
 				$content .= "\n".$css;
 			}

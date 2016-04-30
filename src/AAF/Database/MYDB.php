@@ -103,7 +103,7 @@ class MYDB {
      */
     protected static function _query($sql, $params=[], $debug=false) {
         /* validate the sql */
-        if (emtpy($sql)) {
+        if (empty($sql)) {
             return App::error('Empty SQL statement provided.');
         }
 
