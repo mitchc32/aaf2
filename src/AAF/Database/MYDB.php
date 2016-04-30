@@ -69,7 +69,7 @@ class MYDB {
      */
     public static function connect($host, $db='', $port='3306', $user='', $pass='') {
         /* build the dsn string */
-        $dsn = "mysql:dbname=$db;host=$host:$port";
+        $dsn = "mysql:host=$host;port=$port;dbname=$db";
 
         /* try to connect */
         try {
