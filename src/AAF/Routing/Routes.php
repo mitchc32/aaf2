@@ -249,6 +249,9 @@ class Routes {
 		
 		/* remove any trailing slash */
 		$url = rtrim($url, '/');
+
+		/* make sure the url is at least a leading slash */
+		$url = (empty($url)) ? '/' : $url;
 		
 		/* run the sanitized url */
 		return self::runUrl($url);
@@ -269,7 +272,7 @@ class Routes {
 		if (empty(self::$routes)) {
 			throw new RouteException('No routes have been defined for the application.');
 		}
-		
+
 		/* check each */
 		foreach (self::$routes as $route) {
 			/* stop here if we do not have a match */
@@ -277,7 +280,7 @@ class Routes {
 				return self::_executeRoute($url, $route);
 			}
 		}
-		
+
 		/* send back a 404 error because we did not match a route */
 		return Response::getError(404);
 	}
