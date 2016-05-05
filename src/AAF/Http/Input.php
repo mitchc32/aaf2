@@ -32,12 +32,9 @@ class Input {
 		
 		/* flag it as called */
 		self::$loaded = true;
-		
+
 		/* load the request variables */
 		self::$input = (!empty($_REQUEST)) ? self::clean($_REQUEST) : array();
-		
-		/* load the URL variables */
-		//self::$input = array_merge(self::$input, self::_parseURL());
 		
 		/* done */
 		return self::$input;

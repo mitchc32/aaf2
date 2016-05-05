@@ -93,7 +93,7 @@ class Routes {
 	 * Load a JSON string of routes. The string should be an object with each top-level key
 	 * holding a url. Each URL should have an object with additional information.
 	 * 
-	 * { "/test": { "handler": "Handler.php", "action":"main" } }
+	 * { "test": { "url":"/test", "handler": "Handler.php", "action":"main" } }
 	 * 
 	 * URL Options:
 	 * 
@@ -102,7 +102,8 @@ class Routes {
 	 * - Named params will be passed to the handler method use {...} such as /events/{date}/{title}
 	 * 
 	 * URL/Path Options:
-	 * 
+	 *
+	 * - url: url path to attach to
 	 * - handler: class file to handle the request
 	 * - action: the specific method on the handler to call (optional)
 	 * - method: any/get/post/put/delete (optional)
@@ -126,14 +127,14 @@ class Routes {
 		}
 		
 		/* load the routes */
-		foreach ($json as $url=>$opts) {
+		foreach ($json as $name=>$opts) {
 			/* validate */
-			if (empty($url) || empty($opts) || !App::valid('handler', $opts)) {
-				throw new RouteException('Invalid route provided for "'.$url.'"');
+			if (!App::valid('url', $opts) || empty($opts) || !App::valid('handler', $opts)) {
+				throw new RouteException('Invalid route provided for "'.$name.'"');
 			}
 			
 			/* add it */
-			self::add($url, $opts['handler'], $opts);
+			self::add($name, $opts['url'], $opts['handler'], $opts);
 		}
 	}
 	
@@ -150,17 +151,18 @@ class Routes {
 	 * - Named params will be passed to the handler method use {...} such as /events/{date}/{title}
 	 * 
 	 * Available Options:
-	 * 
+	 *
 	 * - action: the specific method on the handler to call (optional)
 	 * - method: any/get/post/put/delete (optional)
 	 * - security: role_name (optional)
-	 * 
-	 * @param string $route
+	 *
+	 * @param string $name route name/id
+	 * @param string $route url
 	 * @param mixed $handler
 	 * @param mixed $opts
 	 * @return bool
 	 */
-	public static function add($route, $handler, $opts=[]) {
+	public static function add($name, $route, $handler, $opts=[]) {
 		/* validate the route */
 		if (empty($route) || !is_string($route)) {
 			throw new RouteException('Invalid route provided. Route URLs must be a string and at least one character.');
@@ -179,7 +181,7 @@ class Routes {
 		$opts['handler'] = $handler;
 		
 		/* add it to the routes list */
-		self::$routes[$route] = $opts;
+		self::$routes[$name] = $opts;
 		
 		/* done */
 		return true;
@@ -284,11 +286,18 @@ class Routes {
 	 * Routes::_checkRoute()
 	 * 
 	 * Validate a route against the provided URL for a match.
-	 * 
+	 *
+	 * @param string $url to check the route for
 	 * @param mixed $route
 	 * @return bool
 	 */
 	protected static function _checkRoute($url, $route) {
+		/* validate the request method */
+		if (App::valid('method', $route) && strtolower(trim($route['method'])) != strtolower(trim($_SERVER['REQUEST_METHOD']))) {
+			return false;
+		}
+
+		/* check the route */
 		return preg_match('~'.$route['regex'].'~i', $url);
 	}
 	
@@ -304,7 +313,7 @@ class Routes {
 	protected static function _executeRoute($url, $route) {
 		/* set defaults */
 		$params = self::_getParamsFromUrlForRoute($url, $route);
-		
+
 		/* set the base URL to be used in the handler */
 		Response::$url = preg_replace(['/(\/?{.*?}.*)/'], [''], $route['route']);
 		
@@ -313,14 +322,9 @@ class Routes {
 			return Response::getError(503);
 		}
 
-		/* validate the request method */
-		if (App::valid('method', $route) && strtolower(trim($route['method'])) != strtolower(trim($_SERVER['REQUEST_METHOD']))) {
-			return Response::getError(405, 'Route does not allow '.$_SERVER['REQUEST_METHOD'].' requests.');
-		}
-		
 		/* process the before queue */
 		self::_executeBeforeQueue($route);
-		
+
 		/* below we want to make sure that the route always has an action value set,
 		so we'll check to see if one was provided in the params or in the action config
 		before defaulting it to the plugin default action */
@@ -419,7 +423,7 @@ class Routes {
 			case (is_string($route['handler']) && !empty($route['handler'])):
 				/* use the plugin factory method to create an instance of the handler
 				using the route details */
-				$plugin = Plugin::create($route['handler'], $route);
+				$plugin = Plugin::create($route['handler'], App::get('opts', $route));
 				
 				/* Get the action from the route, but make sure to remove any special
 				characters from it in case this came from the URL. We want to make sure

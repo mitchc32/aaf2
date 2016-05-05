@@ -36,7 +36,14 @@ class App {
 	 * @var mixed $input GET/POST input from the $_REQUEST superglobal and filtered for HTML content
 	 */
 	public static $input = [];
-	
+
+	/**
+	 * @var array $profile for benchmarking
+	 */
+	public static $profile = [
+		'plugins' => []
+	];
+
 	/**
 	 * App::create()
 	 * 

@@ -50,7 +50,7 @@ class MYDB {
 
         /* make sure the method exists */
         if (!method_exists(__CLASS__, $method)) {
-            throw new DatabaseException('Invalid method requested from MYDB.');
+            throw new DatabaseException('Invalid method, '.ltrim($method, '_').', requested from MYDB.');
         }
 
         /* run the method */
@@ -126,8 +126,12 @@ class MYDB {
         }
 
         /* execute the statement */
-        if (!$stmt->execute($params)) {
-            return App::error($stmt->errorInfo());
+        try {
+            if (!$stmt->execute($params)) {
+                return App::error($stmt->errorInfo());
+            }
+        } catch (\PDOException $e) {
+            return App::error($e->getMessage());
         }
 
         /* handle the response accordingly */
@@ -161,6 +165,57 @@ class MYDB {
             /* done */
             return App::success($data);
         }
+    }
+
+    /**
+     * MYDB::_startTransaction()
+     *
+     * Start a transaction for the database connection.
+     *
+     * @return array
+     */
+    protected function _startTransaction() {
+        try {
+            self::$pdo->beginTransaction();
+        } catch (\PDOException $e) {
+            return App::error($e->getMessage());
+        }
+
+        return App::success();
+    }
+
+    /**
+     * MYDB::_commitTransaction()
+     *
+     * Commit the transaction statements/executes.
+     *
+     * @return array
+     */
+    protected function _commitTransaction() {
+        try {
+            self::$pdo->commit();
+        } catch (\PDOException $e) {
+            return App::error($e->getMessage());
+        }
+
+        return App::success();
+    }
+
+    /**
+     * MYDB::_rollbackTransaction()
+     *
+     * Rollback statements/execs in the transaction.
+     *
+     * @return array
+     */
+    protected function _rollbackTransaction() {
+        try {
+            self::$pdo->rollBack();
+        } catch (\PDOException $e) {
+            return App::error($e->getMessage());
+        }
+
+        return App::success();
     }
 
     /**

@@ -40,6 +40,11 @@ class Plugin {
 	 * @return void
 	 */
 	public function __construct($config=[]) {
+		/* benchmark the request */
+		if (App::$env['profile']) {
+			App::$profile['plugins'][microtime(true)] = 'Start Plugin Construct '.__CLASS__;
+		}
+		
 		/* set properties from the config */
 		$this->setConfig($config);
 
