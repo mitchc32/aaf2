@@ -6,7 +6,7 @@ use AAF\App as App;
 use AAF\Security\User as User;
 use AAF\Http\Response as Response;
 use AAF\Exceptions\RouteException as RouteException;
-use AAF\Controllers\Plugin as Plugin;
+use AAF\Controllers\BaseController as BaseController;
 
 /**
  * Routes
@@ -435,7 +435,7 @@ class Routes {
 			case (is_string($route['handler']) && !empty($route['handler'])):
 				/* use the plugin factory method to create an instance of the handler
 				using the route details */
-				$plugin = Plugin::create($route['handler'], App::get('opts', $route));
+				$plugin = BaseController::create($route['handler'], App::get('opts', $route));
 				
 				/* Get the action from the route, but make sure to remove any special
 				characters from it in case this came from the URL. We want to make sure

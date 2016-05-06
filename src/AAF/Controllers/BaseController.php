@@ -4,11 +4,11 @@ namespace AAF\Controllers;
 
 use AAF\App as App;
 use AAF\Http\Response as Response;
-use AAF\Exceptions\PluginException as PluginException;
+use AAF\Exceptions\BaseControllerException as BaseControllerException;
 use AAF\Twig\TwigEnvExtension as TwigEnvExtension;
 
 /**
- * Plugin
+ * BaseController
  *
  * The primary route handler and base controller class.
  *
@@ -21,7 +21,7 @@ use AAF\Twig\TwigEnvExtension as TwigEnvExtension;
  * @copyright 2016
  * @access public
  */
-class Plugin {
+class BaseController {
 	
 	/**
 	 * @var Twig_Environment $twig
@@ -34,7 +34,7 @@ class Plugin {
 	public $viewPath = '';
 
 	/**
-	 * Plugin::__construct()
+	 * BaseController::__construct()
 	 * 
 	 * @param mixed $config
 	 * @return void
@@ -42,7 +42,7 @@ class Plugin {
 	public function __construct($config=[]) {
 		/* benchmark the request */
 		if (App::$env['profile']) {
-			App::benchmark('Start Plugin: '.get_class($this));
+			App::benchmark('Start Controller: '.get_class($this));
 		}
 		
 		/* set properties from the config */
@@ -53,18 +53,18 @@ class Plugin {
 	}
 	
 	/**
-	 * Plugin::_default()
+	 * BaseController::_default()
 	 * 
 	 * The default plugin action.
 	 * 
 	 * @return string
 	 */
 	public function _default() {
-		throw new PluginException('You have reached the default function for the AAF\Controller\Plugin class. Please define a _default() method for "'.__CLASS__.'".');
+		throw new BaseControllerException('You have reached the default function for the AAF\Controller\BaseController class. Please define a _default() method for "'.__CLASS__.'".');
 	}
 	
 	/**
-	 * Plugin::render()
+	 * BaseController::render()
 	 * 
 	 * Fill the specified template with the provided variables using the twig
 	 * template engine.
@@ -78,7 +78,7 @@ class Plugin {
 	}
 
 	/**
-	 * Plugin::setConfig
+	 * BaseController::setConfig
 	 *
 	 * @param array $config
 	 * @return bool
@@ -98,18 +98,18 @@ class Plugin {
 	}
 
 	/**
-	 * Plugin::create()
+	 * BaseController::create()
 	 * 
 	 * Factory method to create a plugin instance.
 	 * 
 	 * @param string $src the plugin file with or without path
 	 * @param mixed $config optional config options to overwrite properties
-	 * @return Plugin instance
+	 * @return BaseController instance
 	 */
 	public static function create($src, $config=array()) {
 		/* make sure we have a name */
 		if (empty($src)) {
-			throw new PluginException('Invalid source provided for plugin factory "'.$src.'"');
+			throw new BaseControllerException('Invalid source provided for plugin factory "'.$src.'"');
 		}
 		
 		/* set the file */
@@ -119,7 +119,7 @@ class Plugin {
 		/* check several folders automatically */
 		if ($info['dirname'] == '' || $info['dirname'] == '.') {
 			/* check the registered plugin folders */
-			$file = rtrim(App::$env['paths']['plugins'], '/').'/'.$info['basename'].((!isset($info['extension'])) ? '.php' : '');
+			$file = rtrim(App::$env['paths']['controllers'], '/').'/'.$info['basename'].((!isset($info['extension'])) ? '.php' : '');
 		} else {
 			/* just use the provided source */
 			$file = $src;
@@ -127,7 +127,7 @@ class Plugin {
 
 		/* stop here if not found */
 		if (!file_exists($file)) {
-			throw new PluginException('Invalid source provided for plugin factory "'.$src.'"');
+			throw new BaseControllerException('Invalid source provided for plugin factory "'.$src.'"');
 		}
 		
 		/* include the file */
@@ -135,14 +135,14 @@ class Plugin {
 		
 		/* make sure the class exists */
 		if (!class_exists($name)) {
-			throw new PluginException('Invalid source provided for plugin factory "'.$src.'"');
+			throw new BaseControllerException('Invalid source provided for plugin factory "'.$src.'"');
 		}
 		
 		return new $name($config);
 	}
 	
 	/**
-	 * Plugin::_createTwigEnv()
+	 * BaseController::_createTwigEnv()
 	 * 
 	 * @return Twig_Environment
 	 */

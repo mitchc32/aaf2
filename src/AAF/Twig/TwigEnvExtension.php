@@ -3,8 +3,8 @@
 namespace AAF\Twig;
 
 use AAF\App as App;
+use AAF\Controllers\BaseController;
 use AAF\Http\Response as Response;
-use AAF\Controllers\Plugin as Plugin;
 
 class TwigEnvExtension extends \Twig_Extension {
 	
@@ -45,7 +45,7 @@ class TwigEnvExtension extends \Twig_Extension {
             new \Twig_SimpleFunction('plugin', function($src='', $config=[], $params=[]){
             	/* use the plugin factory method to create an instance of the handler
 				using the route details */
-				$p = Plugin::create($src, $config);
+				$p = BaseController::create($src, $config);
 
 				/* Get the action from the route, but make sure to remove any special
 				characters from it in case this came from the URL. We want to make sure

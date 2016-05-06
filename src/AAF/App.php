@@ -27,7 +27,7 @@ class App {
 		'paths'					=> [
 			'root'				=> '',
 			'views'				=> '',
-			'plugins'			=> '',
+			'controllers'		=> '',
 			'assets'			=> ''
 		]
 	];

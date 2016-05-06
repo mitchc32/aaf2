@@ -6,7 +6,7 @@ use AAF\App as App;
 use AAF\Routing\Routes;
 use AAF\Http\Response as Response;
 
-class Profiler extends Plugin {
+class Profiler extends BaseController {
 
     public function _default() {
         /* add in the css */
