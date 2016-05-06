@@ -29,7 +29,7 @@ class Response {
 		'script'	=> '', // inline script to add to the bottom of the page - will be wrapped in script tags automatically
 		'style' 	=> ''  // inline stylesheets to add to the bottom of the head - will be wrapped in style tags automatically
 	];
-	
+
 	/**
 	 * Response::create()
 	 * 

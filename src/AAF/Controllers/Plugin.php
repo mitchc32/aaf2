@@ -42,7 +42,7 @@ class Plugin {
 	public function __construct($config=[]) {
 		/* benchmark the request */
 		if (App::$env['profile']) {
-			App::$profile['plugins'][microtime(true)] = 'Start Plugin Construct '.__CLASS__;
+			App::benchmark('Start Plugin: '.get_class($this));
 		}
 		
 		/* set properties from the config */

@@ -1,0 +1,30 @@
+(function(){
+    "use strict;"
+
+    var profiler = document.getElementById('aaf-profiler-container');
+    var overlay = document.getElementById('aaf-profiler-background');
+
+    // make sure we have a profiler element
+    if (!profiler || !overlay) {
+        return false;
+    }
+
+    // add in the tab over events
+    profiler.querySelector('.aaf-profiler-icon').onclick = function(){
+        toggle();
+    };
+
+    // in the overlay click
+    overlay.onclick = function() {
+        toggle();
+    }
+
+    // show the profiler
+    profiler.setAttribute('style', '');
+
+    function toggle() {
+        var show = (profiler.querySelector('.aaf-profiler-details').style.display == 'block') ? false : true;
+        profiler.querySelector('.aaf-profiler-details').style.display = (!show) ? 'none' : 'block';
+        overlay.style.display = (!show) ? 'none' : 'block';
+    }
+})();

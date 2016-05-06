@@ -40,9 +40,7 @@ class App {
 	/**
 	 * @var array $profile for benchmarking
 	 */
-	public static $profile = [
-		'plugins' => []
-	];
+	public static $profile = [];
 
 	/**
 	 * App::create()
@@ -57,6 +55,14 @@ class App {
 	 * @return void
 	 */
 	public static function create($configFile, $envKey='dev') {
+		/* make sure there is a start time */
+		if (empty(self::$profile)) {
+			self::$profile[] = [
+				'note' => 'Start Request',
+				'time' => (App::valid('REQUEST_TIME_FLOAT', $_SERVER)) ? $_SERVER['REQUEST_TIME_FLOAT'] : microtime(true)
+			];
+		}
+
 		/* check the file exists */
 		if (!file_exists($configFile)) {
 			throw new \Exception('Invalid config file provided.');
@@ -205,6 +211,21 @@ class App {
 	public static function error($msg='', $json=false, $data=array()) {
 		$resp = array('error'=>true, 'msg'=>$msg, 'data'=>$data);
 		return ($json) ? json_encode($resp) : $resp;
+	}
+
+	/**
+	 * App::benchmark()
+	 *
+	 * Log a profiler step.
+	 *
+	 * @param $note
+	 * @return void
+	 */
+	public static function benchmark($note) {
+		self::$profile[] = [
+			'note' => $note,
+			'time' => round(microtime(true) - self::$profile[0]['time'], 3)
+		];
 	}
 	
 }

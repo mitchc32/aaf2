@@ -22,7 +22,12 @@ class Routes {
 	 * @var mixed $routes the list of added routes to check
 	 */
 	public static $routes = [];
-	
+
+	/**
+	 * @var array $route is the route being actively matched and processed
+	 */
+	public static $route = [];
+
 	/**
 	 * @var mixed $beforeQueue the list of callables to execute before a route is processed
 	 */
@@ -179,6 +184,7 @@ class Routes {
 		/* add some final items */
 		$opts['route'] = $route;
 		$opts['handler'] = $handler;
+		$opts['_name'] = $name;
 		
 		/* add it to the routes list */
 		self::$routes[$name] = $opts;
@@ -316,6 +322,9 @@ class Routes {
 	protected static function _executeRoute($url, $route) {
 		/* set defaults */
 		$params = self::_getParamsFromUrlForRoute($url, $route);
+
+		/* set the route property for the profiler */
+		self::$route = $route;
 
 		/* set the base URL to be used in the handler */
 		Response::$url = preg_replace(['/(\/?{.*?}.*)/'], [''], $route['route']);

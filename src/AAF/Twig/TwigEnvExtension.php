@@ -112,6 +112,19 @@ class TwigEnvExtension extends \Twig_Extension {
             new \Twig_SimpleFunction('summarize', function($str, $len=50){
             	return \Util::summarize($str, $len);
             }),
+
+			new \Twig_SimpleFunction('formatBytes', function($bytes, $precision = 2) {
+				$bytes = (int) $bytes;
+				$units = array('B', 'KB', 'MB', 'GB', 'TB');
+
+				$bytes = max($bytes, 0);
+				$pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+				$pow = min($pow, count($units) - 1);
+
+				$bytes /= pow(1024, $pow);
+
+				return round($bytes, $precision) . ' ' . $units[$pow];
+			})
             
         ];
     }

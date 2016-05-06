@@ -1,5 +1,35 @@
-<div id="aaf-profiler-container">
-    <div class="aaf-profiler-tabs">
-        Profiler
+
+<div id="aaf-profiler-container" style="display:none;">
+    <div class="aaf-profiler-icon">i</div>
+    <div class="aaf-profiler-details">
+        <ul>
+            <li><strong>{{ SERVER.REQUEST_SCHEME|upper }}</strong> {{ httpCode }}</li>
+            <li>
+                <strong>Total Time:</strong> <span>{{ time.total }} sec</span>
+                {% if time.profile is not empty %}
+                <ul>
+                    {% for s in time.profile %}
+                    <li class="small"><strong>{{ s.note }}:</strong> {{ s.time }}</li>
+                    {% endfor %}
+                    <li class="small"><strong>End:</strong> {{ time.total }}</li>
+                </ul>
+                {% endif %}
+            </li>
+            <li><strong>Mem. Usage:</strong>{{ formatBytes(memory) }}</li>
+            <li><strong>{{ SERVER.REQUEST_METHOD }}:</strong> {{ route._name }}</li>
+            <li>
+                {% if SESSION._aaf_user is not empty %}
+                User Roles:
+                    <ul>
+                        {% for r in SESSION._aaf_user %}
+                        <li class="small">{{ r }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                <strong>User Roles:</strong> N/A
+                {% endif %}
+            </li>
+        </ul>
     </div>
 </div>
+<div id="aaf-profiler-background"></div>

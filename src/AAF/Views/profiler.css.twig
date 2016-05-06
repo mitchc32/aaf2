@@ -1,8 +1,77 @@
 #aaf-profiler-container {
     position: fixed;
+    bottom: 10px;
+    right: 10px;
+    padding: 0;
+    border-top: 1px solid #fff;
+    z-index: 999;
+    color: #fff;
+    font-size: 13px;
+    font-family: Sans-Serif Serif;
+}
+
+#aaf-profiler-container > .aaf-profiler-icon {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 40px;
+    height: 40px;
+    border: 1px solid #fff;
+    border-radius: 20px;
+    background: #000;
+    text-align: center;
+    line-height: 40px;
+    cursor: pointer;
+}
+
+#aaf-profiler-container > .aaf-profiler-details {
+    position: absolute;
+    bottom: 60px;
+    right: 0;
+    display: none;
+    width: 400px;
+    background: #000;
+    border: 1px solid #fff;
+    border-radius: 10px;
+    font-weight: normal;
+}
+
+#aaf-profiler-container > .aaf-profiler-details ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+#aaf-profiler-container > .aaf-profiler-details ul > li {
+    padding: 8px;
+    margin: 0;
+}
+
+#aaf-profiler-container > .aaf-profiler-details > ul > li {
+    border-bottom: 1px solid #ddd;
+}
+
+#aaf-profiler-container > .aaf-profiler-details > ul > li:last-child {
+    border-bottom: none;
+}
+
+#aaf-profiler-container > .aaf-profiler-details strong {
+    font-weight: bold;
+    color: #DDDDDD;
+    display: inline-block;
+    width: 40%;
+}
+
+#aaf-profiler-container > .aaf-profiler-details .small {
+    font-size: 11px;
+}
+
+#aaf-profiler-background {
+    display: none;
+    position: fixed;
+    top: 0;
     bottom: 0;
     left: 0;
     right: 0;
-    background: #d9d9d9;
-    padding: 12px;
+    z-index: 899;
 }
