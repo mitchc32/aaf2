@@ -160,6 +160,54 @@ class Response {
 	}
 	
 	/**
+	 * Response::getJS()
+	 * 
+	 * Get ready to include/inject HTML of all combined JS assets and scripts.
+	 * 
+	 * @return string html
+	 */
+	public static function getJS() {
+		$js = '';
+		
+		/* create the js */
+		if (!empty(self::$assets['js']) && is_array(self::$assets['js'])) {
+			foreach(self::$assets['js'] as $path => $v) {
+				$js .= "<script src=\"$path\"></script>\n";
+			}
+		}
+		
+		if (!empty(self::$assets['script']) && is_string(self::$assets['script'])) {
+			$js .= "<script>\n".self::$assets['script']."\n</script>\n";
+		}
+		
+		return $js;
+	}
+	
+	/**
+	 * Response::getCSS()
+	 * 
+	 * Get ready to include/inject HTML of all combined CSS assets and styles.
+	 * 
+	 * @return string html
+	 */
+	public static function getCSS() {
+		$css = '';
+		
+		/* create the css */
+		if (!empty(self::$assets['css']) && is_array(self::$assets['css'])) {
+			foreach(self::$assets['css'] as $path => $v) {
+				$css .= "<link rel=\"stylesheet\" href=\"$path\">\n";
+			}
+		}
+		
+		if (!empty(self::$assets['style']) && is_string(self::$assets['style'])) {
+			$css .= "<style>\n".self::$assets['style']."\n</style>\n";
+		}
+		
+		return $css;
+	}
+	
+	/**
 	 * Response::getError()
 	 * 
 	 * Get an error page with the provided HTTP Status Code.
@@ -187,7 +235,7 @@ class Response {
 	protected static function _inject($content) {
 		/* add in the profile code if profile is true in the application environment */
 		$content = (App::valid('profile', App::$env)) ? self::_injectProfiler($content) : $content;
-
+		
 		/* inject the css, js, scripts and styles */
 		return self::_injectAssets($content);
 	}
@@ -226,30 +274,8 @@ class Response {
 	protected static function _injectAssets($content) {
 		/* set defaults */
 		$force = App::$env['forceAssetInjection'];
-		$js = '';
-		$css = '';
-
-		/* create the js */
-		if (!empty(self::$assets['js']) && is_array(self::$assets['js'])) {
-			foreach(self::$assets['js'] as $path => $v) {
-				$js .= "<script src=\"$path\"></script>\n";
-			}
-		}
-		
-		if (!empty(self::$assets['script']) && is_string(self::$assets['script'])) {
-			$js .= "<script>\n".self::$assets['script']."\n</script>\n";
-		}
-		
-		/* create the css */
-		if (!empty(self::$assets['css']) && is_array(self::$assets['css'])) {
-			foreach(self::$assets['css'] as $path => $v) {
-				$css .= "<link rel=\"stylesheet\" href=\"$path\">\n";
-			}
-		}
-		
-		if (!empty(self::$assets['style']) && is_string(self::$assets['style'])) {
-			$css .= "<style>\n".self::$assets['style']."\n</style>\n";
-		}
+		$js = self::getJS();
+		$css = self::getCSS();
 
 		/* insert the js */
 		if (!empty($js)) {

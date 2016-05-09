@@ -302,10 +302,18 @@ class Routes {
 	 */
 	protected static function _checkRoute($url, $route) {
 		/* validate the request method */
-		if (App::valid('method', $route) && strtolower(trim($route['method'])) != strtolower(trim($_SERVER['REQUEST_METHOD']))) {
-			return false;
+		if (App::valid('method', $route)) {
+			/* standardize the request limits if provided */
+			if (is_string($route['method'])) {
+				$route['method'] = [strtolower(trim($route['method']))];
+			}
+			
+			/* check to see if the request method is in the allowed list */
+			if (!in_array(strtolower(trim($_SERVER['REQUEST_METHOD'])), $route['method'])) {
+				return false;
+			}
 		}
-
+		
 		/* check the route */
 		return preg_match('~'.$route['regex'].'~i', $url);
 	}
