@@ -22,5 +22,10 @@
         "psr-0": {
             "AAF\\": "src/AAF/"
         }
+    },
+    "extra": {
+        "branch-alias": {
+            "1.*": "1.0.x-dev"
+        }
     }
 }
