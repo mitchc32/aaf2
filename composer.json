@@ -17,7 +17,7 @@
     },
     "autoload": {
         "psr-4": {
-            "AAF\\": "aaf/aaf2/src/AAF"
+            "AAF\\": "vendor/aaf/aaf2/src/AAF"
         }
     }
 }
