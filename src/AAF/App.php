@@ -5,6 +5,9 @@ namespace AAF;
 use AAF\Http\Input as Input;
 use AAF\Routing\Routes as Routes;
 
+/* set the framework autoloader */
+spl_autoload_register('AAF\App::autoload');
+
 /**
  * App
  * 
