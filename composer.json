@@ -1,7 +1,6 @@
 {
     "name": "mitchc32/aaf2",
     "description": "Architect Application Framework v2",
-    "version":"2.0.0",
     "type":"library",
     "keywords": ["php","framework"],
     "homepage": "https://github.com/mitchc32/aaf2",
@@ -15,7 +14,7 @@
         }
     ],
     "require": {
-        "php": "^5.6 || ^7.0",
+        "php": "^7.0",
         "twig/twig": "~1.0"
     },
     "autoload": {
