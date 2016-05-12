@@ -1,5 +1,25 @@
 {
+    "name": "mitchc32/aaf2",
+    "description": "Architect Application Framework v2",
+    "type":"library",
+    "keywords": ["php","framework"],
+    "homepage": "https://github.com/mitchc32/aaf2",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mitch Cannon",
+            "email": "mitchcannon25@gmail.com",
+            "homepage": "http://mitchcannon.us",
+            "role": "Developer"
+        }
+    ],
     "require": {
+        "php": "^5.6 || ^7.0",
         "twig/twig": "~1.0"
+    },
+    "autoload": {
+        "psr-0": {
+            "AAF\\": "src/AAF/"
+        }
     }
 }

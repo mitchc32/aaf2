@@ -10,3 +10,6 @@ if (session_id() == '') {
 
 /* include the framework */
 require __DIR__.'/src/AAF/App.php';
+
+/* register the framework autoloader */
+//spl_autoload_register('AAF\App::autoload');
