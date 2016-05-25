@@ -179,7 +179,7 @@ class Routes {
 		}
 		
 		/* create the regex to match the url for the route */
-		$opts['regex'] = '^'.preg_replace(['/\*/', '/\/{.*}/', '~(/?\.\*){2,}~', '~/{2,}~'], ['.*', '/?.*', '/?.*', '/'], $route).'$';
+		$opts['regex'] = '^'.preg_replace(['/\*/', '/\/{.*?}/', '~(/?\.\*){2,}~', '~/{2,}~'], ['.*', '/?.*', '/?.*', '/'], $route).'$';
 		
 		/* add some final items */
 		$opts['route'] = $route;
