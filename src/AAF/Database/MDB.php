@@ -809,5 +809,75 @@ class MDB {
 		}
 	}
 	
+    /**
+	 * MDB::mergeMongoFilters()
+	 *
+	 * Merge two arrays of mongo filters together. This method simplifies
+	 * merging filters that may containe $or/$and arrays.
+	 *  
+	 * @param mixed $filters1
+	 * @param mixed $filters2
+	 * @return mixed
+	 */
+	public static function mergeMongoFilters($filters1, $filters2) {
+		/* set a base */
+		$base = array();
+		$ors = array();
+		
+		/* make sure both are arrays */
+		if (empty($filters1) || !is_array($filters1)) {
+			return $filters2;
+		} elseif (empty($filters2) || !is_array($filters2)) {
+			return $filters1;
+		}
+		
+		/* build the sorted list */
+		foreach (array($filters1, $filters2) as $filter) {
+			foreach ($filter as $k=>$v) {
+				switch (true) {
+					case ($k == '$and'):
+						if (!isset($base['$and'])) {
+							$base['$and'] = array();
+						}
+						
+						$base['$and'] = array_merge($base['$and'], $v);
+						break;
+					
+					case ($k == '$or'):
+						$ors[] = $v;
+						break;
+					
+					default:
+						$base[$k] = $v;
+						break;
+				}
+			}
+		}
+		
+		/* we need to add in the ors if we have some */
+		if (!empty($ors)) {
+			switch (true) {
+				case (isset($base['$and'])):
+					foreach ($ors as $or) {
+						$base['$and'][] = array('$or'=>$or);
+					}
+					break;
+				
+				case (count($ors) > 1):
+					$base['$and'] = array();
+					foreach ($ors as $or) {
+						$base['$and'][] = array('$or'=>$or);
+					}
+					break;
+				
+				default:
+					$base['$or'] = $ors[0];
+					break;
+			}
+		}
+		
+		/* done */
+		return $base;
+	}
 	
 }
