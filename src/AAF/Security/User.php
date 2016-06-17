@@ -80,7 +80,7 @@ class User {
 		}
 		
 		/* make sure the session hasn't expired */
-		if (time() <= $_SESSION['_aaf_user']['expOn']) {
+		if (time() >= $_SESSION['_aaf_user']['expOn']) {
 			/* clear the session */
 			self::unauthorize();
 			
