@@ -21,6 +21,11 @@ class Response {
 	public static $url = '';
 	
 	/**
+	 * @var integer $httpCode reference to the http status code for use in error handling
+	 */
+	public static $httpCode = 200;
+	
+	/**
 	 * @var mixed $assets list of external assets to be injected into the response
 	 */
 	public static $assets = [
@@ -219,6 +224,9 @@ class Response {
 	public static function getError($httpCode=404, $msg='') {
 		/* set the code */
 		http_response_code((int) $httpCode);
+		
+		/* set the global for use elsewhere */
+		self::$httpCode = (int) $httpCode;
 		
 		/* set the content */
 		return self::_inject('<h1>Oh no! '.$httpCode.'!</h1><p>'.$msg.'</p>');

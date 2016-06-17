@@ -339,7 +339,7 @@ class Routes {
 		
 		/* check for a security flag on the route against the user's session */
 		if (App::valid('security', $route) && !User::isAuthorized($route['security'])) {
-			return Response::getError(503);
+			return Response::getError(401);
 		}
 
 		/* process the before queue */
