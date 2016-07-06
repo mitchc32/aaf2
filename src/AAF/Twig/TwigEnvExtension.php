@@ -2,9 +2,9 @@
 
 namespace AAF\Twig;
 
-use AAF\App as App;
+use AAF\App;
 use AAF\Controllers\BaseController;
-use AAF\Http\Response as Response;
+use AAF\Http\Response;
 
 class TwigEnvExtension extends \Twig_Extension {
 	

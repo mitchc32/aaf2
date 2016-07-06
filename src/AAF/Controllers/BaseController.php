@@ -2,10 +2,10 @@
 
 namespace AAF\Controllers;
 
-use AAF\App as App;
-use AAF\Http\Response as Response;
-use AAF\Exceptions\BaseControllerException as BaseControllerException;
-use AAF\Twig\TwigEnvExtension as TwigEnvExtension;
+use AAF\App;
+use AAF\Http\Response;
+use AAF\Exceptions\BaseControllerException;
+use AAF\Twig\TwigEnvExtension;
 
 /**
  * BaseController

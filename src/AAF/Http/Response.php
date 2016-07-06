@@ -2,8 +2,8 @@
 
 namespace AAF\Http;
 
-use AAF\App as App;
-use AAF\Routing\Routes as Routes;
+use AAF\App;
+use AAF\Routing\Routes;
 
 /**
  * Response

@@ -2,7 +2,7 @@
 
 namespace AAF\Security;
 
-use AAF\App as App;
+use AAF\App;
 
 /**
  * User

@@ -2,11 +2,11 @@
 
 namespace AAF\Routing;
 
-use AAF\App as App;
-use AAF\Security\User as User;
-use AAF\Http\Response as Response;
-use AAF\Exceptions\RouteException as RouteException;
-use AAF\Controllers\BaseController as BaseController;
+use AAF\App;
+use AAF\Security\User;
+use AAF\Http\Response;
+use AAF\Exceptions\RouteException;
+use AAF\Controllers\BaseController;
 
 /**
  * Routes

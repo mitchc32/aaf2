@@ -2,8 +2,8 @@
 
 namespace AAF\Database;
 
-use AAF\App as App;
-use AAF\Exceptions\DatabaseException as DatabaseException;
+use AAF\App;
+use AAF\Exceptions\DatabaseException;
 
 /**
  * MYDB

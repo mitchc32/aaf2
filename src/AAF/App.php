@@ -2,8 +2,8 @@
 
 namespace AAF;
 
-use AAF\Http\Input as Input;
-use AAF\Routing\Routes as Routes;
+use AAF\Http\Input;
+use AAF\Routing\Routes;
 
 /**
  * App

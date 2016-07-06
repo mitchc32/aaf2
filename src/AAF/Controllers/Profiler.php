@@ -2,9 +2,9 @@
 
 namespace AAF\Controllers;
 
-use AAF\App as App;
+use AAF\App;
 use AAF\Routing\Routes;
-use AAF\Http\Response as Response;
+use AAF\Http\Response;
 
 class Profiler extends BaseController {
 

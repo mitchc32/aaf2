@@ -2,8 +2,8 @@
 
 namespace AAF\Database;
 
-use AAF\App as App;
-use AAF\Exceptions\DatabaseException as DatabaseException;
+use AAF\App;
+use AAF\Exceptions\DatabaseException;
 
 /**
  * MDB
@@ -47,7 +47,7 @@ class MDB {
 			$p = App::$env['database'];
 			
 			/* try to connect */
-			self::connect($p['host'], $p['db'], $p['port'], $p['authDb'], $p['user'], $p['pass']);
+			self::connect($p['host'], $p['db'], $p['port'], App::get('authDb', $p), App::get('user', $p), App::get('pass', $p));
 		}
 		
 		/* prefix the method with an underscore to match the actual method name */
