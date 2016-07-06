@@ -5,7 +5,7 @@ namespace AAF\Caching;
 use AAF\App;
 use AAF\Exceptions\CachingException;
 
-class Redis {
+class RDS {
     
     /**
      * @var boolean $initialized connected flag
@@ -23,7 +23,7 @@ class Redis {
     public static $prefix = '';
     
     /**
-     * Redis::__callStatic()
+     * RDS::__callStatic()
      * 
 	 * This method will self-initialize the redis connection if it hasn't been 
      * done before every call. The connection details are pulled from the
@@ -65,7 +65,7 @@ class Redis {
     }
     
     /**
-     * Redis::connect()
+     * RDS::connect()
      * 
      * Connect to the Redis server.
      * 
@@ -76,7 +76,7 @@ class Redis {
      */
     public static function connect($host='localhost', $port=6379, $password='') {
         // create the instance
-        self::$redis = new Redis();
+        self::$redis = new \Redis();
 		
         // try to connect
 		if(!self::$redis->connect($host, $port)){
@@ -96,7 +96,7 @@ class Redis {
     }
     
 	/**
-	 * Redis::get()
+	 * RDS::get()
 	 * 
 	 * @param mixed $key
 	 * @param boolean $addPrefix
@@ -110,7 +110,7 @@ class Redis {
 	}
 	
 	/**
-	 * Redis::set()
+	 * RDS::set()
 	 * 
 	 * @param string $key
 	 * @param mixed $val
@@ -134,7 +134,7 @@ class Redis {
 	}
 	
 	/**
-	 * Redis::replace()
+	 * RDS::replace()
 	 * 
 	 * @param string $key
 	 * @param mixed $val
@@ -146,7 +146,7 @@ class Redis {
 	}
 	
 	/**
-	 * Redis::delete()
+	 * RDS::delete()
 	 * 
 	 * @param string $key
 	 * @param boolean $addPrefix
