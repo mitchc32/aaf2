@@ -109,8 +109,24 @@ class TwigEnvExtension extends \Twig_Extension {
             	}
             }),
             
-            new \Twig_SimpleFunction('summarize', function($str, $len=50){
-            	return \Util::summarize($str, $len);
+            new \Twig_SimpleFunction('summarize', function($str, $len=50, $replaceLineBreaks=false){
+            	/* make sure we have a string */
+        		if (!is_string($str)) {
+        			return '';
+        		}
+        		
+        		/* see if we neeed to strip out line breaks */
+        		if($replaceLineBreaks === true){
+        			$str = str_replace("\n",' ',$str);
+        		}
+        		
+        		/* remove any template fields */
+        		$str = preg_replace('/{[%{](.+?)[%}]}/im', '', $str);
+        		
+        		/* clean it all up */
+        		$str = explode("\n", trim(wordwrap(strip_tags(stripslashes($str)), $len, "\n")));
+        		
+        		return $str[0].((count($str) > 1) ? '...' : '');
             }),
 
 			new \Twig_SimpleFunction('formatBytes', function($bytes, $precision = 2) {
