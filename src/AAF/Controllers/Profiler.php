@@ -10,10 +10,10 @@ class Profiler extends BaseController {
 
     public function _default() {
         /* add in the css */
-        Response::addStyle($this->render([], 'profiler.css.twig'));
+        Response::addStyle($this->renderString([], file_get_contents(__DIR__.'/../Views/profiler.css.twig')));
 
         /* in the js */
-        Response::addScript($this->render([], 'profiler.js.twig'));
+        Response::addScript($this->renderString([], file_get_contents(__DIR__.'/../Views/profiler.js.twig')));
 
         /* set the variables for the profiler template */
         $vars = [
@@ -22,7 +22,7 @@ class Profiler extends BaseController {
             'roles' => App::get('_aaf_user', $_SESSION),
             'memory' => memory_get_peak_usage(true),
             'time' => [
-                'start' => App::get('REQUEST_TIME_FLOAT', $_SERVER),
+                'start' => (App::valid('REQUEST_TIME_FLOAT', $_SERVER)) ? $_SERVER['REQUEST_TIME_FLOAT'] : 0,
                 'end' => microtime(true),
                 'profile' => App::$profile,
                 'total' => 0
@@ -33,7 +33,7 @@ class Profiler extends BaseController {
         $vars['time']['total'] = round($vars['time']['end'] - $vars['time']['start'], 3);
 
         /* put it all together in the template */
-        return $this->render($vars, 'profiler.html.twig');
+        return $this->renderString($vars, file_get_contents(__DIR__.'/../Views/profiler.html.twig'));
     }
 
 }

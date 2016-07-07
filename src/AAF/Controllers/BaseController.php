@@ -5,7 +5,7 @@ namespace AAF\Controllers;
 use AAF\App;
 use AAF\Http\Response;
 use AAF\Exceptions\BaseControllerException;
-use AAF\Twig\TwigEnvExtension;
+use AAF\Twig\Template;
 
 /**
  * BaseController
@@ -47,9 +47,6 @@ class BaseController {
 		
 		/* set properties from the config */
 		$this->setConfig($config);
-
-		/* setup the twig template engine */
-		$this->twig = $this->_createTwigEnv();
 	}
 	
 	/**
@@ -74,8 +71,22 @@ class BaseController {
 	 * @return string
 	 */
 	public function render($vars, $template) {
-		return (string) $this->twig->render($template, $vars);
+		return (string) Template::render($vars, $template);
 	}
+    
+    /**
+     * BaseController::renderView()
+     * 
+     * Fill the specified template string with the provided variables using
+     * the twig template engine. This does not reference a file.
+     * 
+     * @param mixed $vars
+     * @param string $templateString full template string
+     * @return string
+     */
+    public function renderString($vars, $templateString) {
+        return (string) Template::renderString($vars, $templateString);
+    }
 
 	/**
 	 * BaseController::setConfig
@@ -139,34 +150,6 @@ class BaseController {
 		}
 		
 		return new $name($config);
-	}
-	
-	/**
-	 * BaseController::_createTwigEnv()
-	 * 
-	 * @return Twig_Environment
-	 */
-	protected function _createTwigEnv() {
-		/* set the path */
-		$path = (!empty($this->viewPath) && is_string($this->viewPath)) ? $this->viewPath : App::$env['paths']['views'];
-
-		/* create twig loader */
-		$loader = new \Twig_Loader_Filesystem($path);
-		
-		/* create the environment */
-		$twig = new \Twig_Environment($loader, array(
-			'cache' => false,
-			'charset' => 'utf-8',
-			'auto_reload' => 1,
-			'strict_variables' => false,
-			'autoescape' => false
-		));
-		
-		/* add in the custom AAF extension */
-		$twig->addExtension(new TwigEnvExtension());
-		
-		/* done */
-		return $twig;
 	}
 	
 }

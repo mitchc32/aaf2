@@ -21,7 +21,7 @@
                 {% if SESSION._aaf_user is not empty %}
                 User Roles:
                     <ul>
-                        {% for r in SESSION._aaf_user %}
+                        {% for r in SESSION._aaf_user.roles %}
                         <li class="small">{{ r }}</li>
                         {% endfor %}
                     </ul>
