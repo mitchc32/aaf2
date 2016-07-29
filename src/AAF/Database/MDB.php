@@ -126,10 +126,10 @@ class MDB {
 	 * @return mixed
 	 */
 	protected static function _command($database, $config) {
-		/* create the new command object */
-		$command = new \MongoDB\Driver\Command($config);
-		
 		try {
+			/* create the new command object */
+			$command = new \MongoDB\Driver\Command($config);
+			
 			/* run the command */
 		    $cursor = MDB::$mongo->executeCommand($database, $command);
 		    
@@ -153,6 +153,8 @@ class MDB {
 			return App::error($e->getMessage());
 		} catch(\MongoDB\Driver\Exception $e) {
 		    return App::error($e->getMessage());
+		} catch (\Exception $e) {
+			return App::error($e->getMessage());
 		}
 	}
 	

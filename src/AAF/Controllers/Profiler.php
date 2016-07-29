@@ -19,7 +19,7 @@ class Profiler extends BaseController {
         $vars = [
             'httpCode' => http_response_code(),
             'route' => Routes::$route,
-            'roles' => App::get('_aaf_user', $_SESSION),
+            'roles' => (session_status() == PHP_SESSION_ACTIVE) ? App::get('_aaf_user', $_SESSION) : [],
             'memory' => memory_get_peak_usage(true),
             'time' => [
                 'start' => (App::valid('REQUEST_TIME_FLOAT', $_SERVER)) ? $_SERVER['REQUEST_TIME_FLOAT'] : 0,
