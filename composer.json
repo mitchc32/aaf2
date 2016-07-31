@@ -19,5 +19,13 @@
         "psr-4": {
             "AAF\\": ["src/AAF/"]
         }
-    } 
+    },
+    "scripts": {
+        "post-update-cmd": [
+            "AAF\\Composer\\Installer::commandUpdate"
+        ],
+        "post-install-cmd": [
+            "AAF\\Composer\\Installer::commandInstall"
+        ]
+    }
 }
