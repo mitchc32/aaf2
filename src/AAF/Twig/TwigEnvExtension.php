@@ -20,7 +20,8 @@ class TwigEnvExtension extends \Twig_Extension {
 			],
             'SESSION' => (isset($_SESSION)) ? $_SESSION : [],
             'SERVER' => $_SERVER,
-            'INPUT' => App::$input
+            'INPUT' => App::$input,
+            'ENV' => App::$env
         ];
     }
     
