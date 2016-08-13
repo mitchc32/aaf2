@@ -119,6 +119,9 @@ class Template {
 		/* add in the custom AAF extension */
 		$twig->addExtension(new TwigEnvExtension());
 		
+		/* add in the twig string loader extension */
+		$twig->addExtension(new \Twig_Extension_StringLoader());
+		
 		/* done */
 		return $twig;
     }
