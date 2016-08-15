@@ -4,7 +4,7 @@ namespace AAF\Twig;
 
 use AAF\App;
 use AAF\Twig\TwigEnvExtension;
-use AAF\Exceptions\TwigException;
+use AAF\Exceptions\TemplateException;
 
 class Template {
     
@@ -102,6 +102,12 @@ class Template {
         /* create the config */
         $config = (empty($opts) || !is_array($opts)) ? self::$envDefaults : array_merge(self::$envDefaults, $opts);
         
+        /* remove any custom extension from the config array to prevent an error
+        when creating the environment */
+        if (App::valid('extension', $config)) {
+            unset($config['extension']);
+        }
+        
         /* set the path */
 		$path = (App::valid('path', $config) && is_string($config['path'])) ? $config['path'] : App::$env['paths']['views'];
         
@@ -122,8 +128,56 @@ class Template {
 		/* add in the twig string loader extension */
 		$twig->addExtension(new \Twig_Extension_StringLoader());
 		
+		/* load any custom extension */
+		self::loadCustomExtension($twig);
+		
 		/* done */
 		return $twig;
+    }
+    
+    /**
+     * Template::loadCustomExtension()
+     * 
+     * Check the environment variable for any customized twig extensions that
+     * the site needs to load.
+     * 
+     * @throws TwigException
+     * @param TwigEnvironment $twig
+     * @return TwigEnvironment
+     */
+    public static function loadCustomExtension($twig) {
+        if (!App::valid('twig', App::$env) || !App::valid('extension', App::$env['twig'])) {
+            return $twig;
+        }
+        
+        /* set the directory to look in and the full file path */
+        $dir = (App::valid('paths', App::$env)) ? rtrim(App::get('root', App::$env['paths']), '/').'/' : '';
+        $filePath = $dir . ltrim(App::$env['twig']['extension'], '/');
+        
+        /* make sure the file exists */
+        if (!file_exists($filePath)) {
+            throw new TemplateException('Invalid twig extension file path; file "'.$filePath.'" does not exist.');
+        }
+        
+        /* include the class */
+        require_once $filePath;
+        
+        /* get the class name from the path: lib\CustomTwig.php = CustomTwig */
+        $className = pathinfo($filePath, PATHINFO_FILENAME);
+        
+        /* make sure the class exists */
+        if (!class_exists($className)) {
+            throw new TemplateException('Invalid twig extension; class "'.$className.'" does not exist.');
+        }
+        
+        /* try to create the class */
+        try {
+            $twig->addExtension(new $className());
+        } catch (\Exception $e) {
+            throw new TemplateException('Invalid twig extension; '.$e->getMessage());
+        }
+        
+        return $twig;
     }
     
 }
