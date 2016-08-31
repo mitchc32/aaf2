@@ -525,10 +525,14 @@ class MDB {
 			/* set the data's new id */
 			if ($bulk) {
 				foreach ($data as $i=>$d) {
-					$data[$i]['_id'] = new \MongoDB\BSON\ObjectID();
+					if (!App::valid('_id', $data[$id])) {
+                        $data[$i]['_id'] = new \MongoDB\BSON\ObjectID();
+                    }
 				}
 			} else {
-				$data['_id'] = new \MongoDB\BSON\ObjectID();
+                if (!App::valid('_id', $data)) {
+				    $data['_id'] = new \MongoDB\BSON\ObjectID();
+                }
 			}
 			
 			/* run the command */
