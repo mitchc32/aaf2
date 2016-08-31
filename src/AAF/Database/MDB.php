@@ -525,13 +525,23 @@ class MDB {
 			/* set the data's new id */
 			if ($bulk) {
 				foreach ($data as $i=>$d) {
-					if (!App::valid('_id', $data[$id])) {
+					if (App::valid('_id', $data[$id])) {
+                        $data[$i]['_id'] = self::id($data[$i]['_id']);
+                        if (!$data[$i]['_id']) {
+                            throw new DatabaseException('Invalid ID, "'.$data[$i]['_id'].'", provided');
+                        }
+                    } else {
                         $data[$i]['_id'] = new \MongoDB\BSON\ObjectID();
                     }
 				}
 			} else {
-                if (!App::valid('_id', $data)) {
-				    $data['_id'] = new \MongoDB\BSON\ObjectID();
+                if (App::valid('_id', $data)) {
+				    $data['_id'] = self::id($data['_id']);
+                    if (!$data['_id']) {
+                        throw new DatabaseException('Invalid ID, "'.$data['_id'].'", provided');
+                    }
+                } else {
+                    $data['_id'] = new \MongoDB\BSON\ObjectID();
                 }
 			}
 			
