@@ -545,19 +545,33 @@ class MDB {
                 }
 			}
 			
+			/* default the data to bulk form */
+			$data = ($bulk) ? $data : [$data];
+			
 			/* run the command */
 			$resp = self::_command($db, [
 				'insert' => $col,
-				'documents' => ($bulk) ? $data : [$data]
+				'documents' => $data
 			]);
 			
 			/* error check */
 			if ($resp['error']) {
 				return $resp;
+			} elseif (App::valid('writeErrors', $resp['data'][0])) {
+				// set the default error
+				$errorMsg = '';
+				
+				foreach ($resp['data'][0]['writeErrors'] as $err) {
+					$errorMsg .= 'Could not write _id ' . $data[$err['index']]['_id'] . ' due to the following error: ' . $err['errmsg'] . ' ';
+				}
+				
+				return App::error($errorMsg);
+			} elseif ($resp['data'][0]['n'] == 0) {
+				return App::error('Could not write insert due to an unknown error.');
 			}
 			
 			/* set the back the response */
-			return App::success(array('rows'=>array($data), 'numrows'=>1));
+			return App::success(['rows' => $data, 'numrows'=>1]);
 		} catch (\MongoDB\Driver\Exception\RuntimeException $e) {
 			return App::error($e->getMessage());
 		} catch (\MongoDB\Driver\Exception $e) {
