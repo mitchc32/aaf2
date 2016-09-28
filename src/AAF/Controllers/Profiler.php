@@ -9,6 +9,11 @@ use AAF\Http\Response;
 class Profiler extends BaseController {
 
     public function _default() {
+        /* stop here if profiling is not enabled */
+        if (!App::valid('profile', App::$env) && is_bool(App::$env['profile']) && App::$env['profile']) {
+            return '';
+        }
+        
         /* add in the css */
         Response::addStyle($this->renderString([], file_get_contents(__DIR__.'/../Views/profiler.css.twig')));
 
