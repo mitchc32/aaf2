@@ -19,6 +19,7 @@ class MDB {
 	public static $mongo = false;
 	public static $db = false;
 	
+	public static $conString = false;
 	public static $host = false;
 	public static $dbName = false;
 	public static $port = false;
@@ -39,15 +40,20 @@ class MDB {
 	public static function __callStatic($method, $params) {
 		if (!self::$initialized) {
 			/* make sure we have database settings */
-			if (!App::valid('database', App::$env) || !App::valid(['host', 'port', 'db'], App::$env['database'])) {
+			if (!App::valid('database', App::$env) || (!App::valid(['host', 'port', 'db'], App::$env['database']) && !App::valid('connectionString', App::$env['database']))) {
 				throw new DatabaseException('Invalid or missing parameters for MDB. Required: host, port, db');
 			}
 			
 			/* set a shortcut */
 			$p = App::$env['database'];
 			
-			/* try to connect */
-			self::connect($p['host'], $p['db'], $p['port'], App::get('authDb', $p), App::get('user', $p), App::get('pass', $p));
+			/* check for a connection string */
+			if (App::valid('connectionString', App::$env['database'])) {
+				self::connectWithString(App::$env['database']['connectionString']);
+			} else {
+				/* try to connect with creds */
+				self::connect($p['host'], $p['db'], $p['port'], App::get('authDb', $p), App::get('user', $p), App::get('pass', $p));
+			}
 		}
 		
 		/* prefix the method with an underscore to match the actual method name */
@@ -115,6 +121,36 @@ class MDB {
 		return true;
 	}
 	
+	/**
+	 * MDB::connectWithString()
+	 * 
+	 * Connect to the database using a connection string instead of parameters.
+	 * 
+	 * @params string $conString full connection string
+	 * @return bool
+	 */
+	public static function connectWithString($conString) {
+		/* set the connection config */
+		$config = array(
+			'connect' => true,
+			'fsync' => true
+		);
+		
+		/* connect */
+		try {
+			self::$mongo = new \MongoDB\Driver\Manager($conString, $config);
+		} catch (\MongoDB\Driver\Exception\RuntimeException $e) {
+			return false;
+		} catch (\MongoDB\Driver\Exception $e) {
+			return false;
+		}
+		
+		/* set the property for reference elsewhere */
+		self::$conString = $conString;
+		
+		/* done */
+		return true;
+	}
 	
 	/**
 	 * MDB::_command()
@@ -723,6 +759,10 @@ class MDB {
 	 * @return mixed
 	 */
 	protected static function switchDB($db) {
+		if (self::$conString) {
+			return self::connectWithString(self::$conString);
+		}
+		
 		return self::connect(self::$host, $db, self::$port, self::$authDb, self::$user, self::$pass);
 	}
 	
@@ -800,7 +840,7 @@ class MDB {
 			$time = (empty($time)) ? time() : (int) $time;
 		}
 		
-		return new \MongoDB\BSON\UTCDateTime($time);
+		return new \MongoDB\BSON\UTCDateTime($time * 1000);
 	}
 	
 	/**
@@ -816,7 +856,7 @@ class MDB {
 		$sec = (string) $date;
 		
 		/* convert to an integer */
-		return (int) $sec;
+		return ceil((int) $sec / 1000);
 	}
 	
 	/**
