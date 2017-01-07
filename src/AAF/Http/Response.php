@@ -242,7 +242,7 @@ class Response {
 	 */
 	protected static function _inject($content) {
 		/* add in the profile code if profile is true in the application environment */
-		$content = (App::valid('profile', App::$env)) ? self::_injectProfiler($content) : $content;
+		$content = (App::valid('profile', App::$env) && is_bool(App::$env['profile']) && App::$env['profile']) ? self::_injectProfiler($content) : $content;
 		
 		/* inject the css, js, scripts and styles */
 		return self::_injectAssets($content);
