@@ -147,6 +147,8 @@ class MDB {
 		
 		/* set the property for reference elsewhere */
 		self::$conString = $conString;
+		self::$db = App::get('db', App::$env['database']);
+		self::$dbName = App::get('db', App::$env['database']);
 		
 		/* done */
 		return true;
