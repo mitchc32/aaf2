@@ -27,6 +27,8 @@ class MDB {
 	public static $user = false;
 	public static $pass = false;
 	
+	public static $log = [];
+	
 	/**
 	 * MDB::__callStatic()
 	 * 
@@ -56,6 +58,9 @@ class MDB {
 			}
 		}
 		
+		/* set the request start */
+		$start = microtime(true);
+		
 		/* prefix the method with an underscore to match the actual method name */
 		$method = '_'.$method;
 		
@@ -65,7 +70,17 @@ class MDB {
 		}
 		
 		/* run the method */
-		return call_user_func_array([__CLASS__, $method], $params);
+		$resp = call_user_func_array([__CLASS__, $method], $params);
+		
+		/* add to the log */
+		self::$log[] = [
+			'time' => round(microtime(true) - $start, 3),
+	        'type' => ltrim($method, '_'),
+	        'error' => $resp['error'],
+	        'msg' => $resp['msg']
+		];
+		
+		return $resp;
 	}
 	
 	/**

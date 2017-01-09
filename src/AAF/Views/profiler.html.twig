@@ -15,6 +15,16 @@
                 </ul>
                 {% endif %}
             </li>
+            <li>
+                <strong>DB Review:</strong>
+                {% if db is not empty %}
+                <ul>
+                    {% for s in db %}
+                    <li class="small"><strong>{{ s.type }}:</strong> {{ s.time }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </li>
             <li><strong>Mem. Usage:</strong>{{ formatBytes(memory) }}</li>
             <li><strong>{{ SERVER.REQUEST_METHOD }}:</strong> {{ route._name }}</li>
             <li>

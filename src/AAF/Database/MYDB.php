@@ -20,6 +20,7 @@ class MYDB {
 
     public static $initialized = false;
     public static $pdo = false;
+    public static $log = [];
 
     /**
      * MYDB::__callStatic()
@@ -45,6 +46,9 @@ class MYDB {
             self::connect($p['host'], $p['db'], $p['port'], $p['user'], $p['pass']);
         }
 
+		/* set the request start */
+		$start = microtime(true);
+		
         /* prefix the method with an underscore to match the actual method name */
         $method = '_'.$method;
 
@@ -52,9 +56,20 @@ class MYDB {
         if (!method_exists(__CLASS__, $method)) {
             throw new DatabaseException('Invalid method, '.ltrim($method, '_').', requested from MYDB.');
         }
-
+        
         /* run the method */
-        return call_user_func_array([__CLASS__, $method], $params);
+        $resp = call_user_func_array([__CLASS__, $method], $params);
+        
+		/* add to the log */
+		self::$log[] = [
+			'time' => round(microtime(true) - $start, 3),
+	        'type' => ltrim($method, '_'),
+	        'error' => $resp['error'],
+	        'msg' => $resp['msg']
+		];
+		
+        /* run the method */
+        return $resp;
     }
 
     /**

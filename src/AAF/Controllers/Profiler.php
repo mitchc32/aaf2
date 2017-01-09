@@ -36,6 +36,9 @@ class Profiler extends BaseController {
 
         /* calculate the total execution time */
         $vars['time']['total'] = round($vars['time']['end'] - $vars['time']['start'], 3);
+        
+        /* add in database transaction logging */
+        $vars['db'] = \AAF\Database\MDB::$log + \AAF\Database\MYDB::$log;
 
         /* put it all together in the template */
         return $this->renderString($vars, file_get_contents(__DIR__.'/../Views/profiler.html.twig'));
