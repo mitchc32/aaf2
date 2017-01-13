@@ -170,6 +170,37 @@ class MDB {
 	}
 	
 	/**
+	 * MDB::_aggregate()
+	 * 
+	 * This method runs an aggregate command using the MDB::_command method. The
+	 * only difference is how the response is formatted for consistency with
+	 * _find method.
+	 * 
+	 * @param string $collection
+	 * @param mixed $pipeline
+	 * @return mixed
+	 */
+	protected static function _aggregate($collection, $pipeline) {
+		/* check for a db reference */
+		$col = self::_getColAndDb($collection);
+		
+		/* call the command for consistency */
+		$resp = self::_command($col[0], [
+			'aggregate' => $col[1],
+			'pipeline' => $pipeline
+		]);
+		
+		if ($resp['error']) {
+			return $resp;
+		}
+		
+		return App::success([
+			'numrows' => count($resp['data'][0]['result']),
+			'rows' => $resp['data'][0]['result']
+		]);
+	}
+	
+	/**
 	 * MDB::_command()
 	 * 
 	 * Run a standard command against the provided database.
