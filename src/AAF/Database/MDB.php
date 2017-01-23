@@ -178,9 +178,10 @@ class MDB {
 	 * 
 	 * @param string $collection
 	 * @param mixed $pipeline
+	 * @param boolean $asCursor
 	 * @return mixed
 	 */
-	protected static function _aggregate($collection, $pipeline) {
+	protected static function _aggregate($collection, $pipeline, $asCursor=false) {
 		/* check for a db reference */
 		$col = self::_getColAndDb($collection);
 		
@@ -188,9 +189,13 @@ class MDB {
 		$resp = self::_command($col[0], [
 			'aggregate' => $col[1],
 			'pipeline' => $pipeline
-		]);
+		], $asCursor);
 		
 		if ($resp['error']) {
+			return $resp;
+		}
+		
+		if ($asCursor) {
 			return $resp;
 		}
 		
@@ -207,9 +212,10 @@ class MDB {
 	 * 
 	 * @param string $database
 	 * @param mixed $config
+	 * @param boolean $asCursor return the resulting cursor instead of the full data set
 	 * @return mixed
 	 */
-	protected static function _command($database, $config) {
+	protected static function _command($database, $config, $asCursor=false) {
 		try {
 			/* create the new command object */
 			$command = new \MongoDB\Driver\Command($config);
@@ -223,12 +229,17 @@ class MDB {
 				'document' => 'array'
 			));
 			
-			/* get the data */
-			$data = iterator_to_array($cursor, false);
-			
-			/* check for an ok flag */
-			if (isset($data[0]['ok']) && $data[0]['ok'] != 1) {
-				return App::error('Unknown database error.');
+			if ($asCursor) {
+				/* set the data */
+				$data = ['cursor' => $cursor];
+			} else {
+				/* grab the full data set */
+				$data = iterator_to_array($cursor, false);
+				
+				/* check for an ok flag */
+				if (isset($data[0]['ok']) && $data[0]['ok'] != 1) {
+					return App::error('Unknown database error.');
+				}
 			}
 			
 			/* done */
