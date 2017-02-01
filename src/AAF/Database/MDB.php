@@ -559,7 +559,7 @@ class MDB {
 	 * @param boolean $multi update all matches
 	 * @return mixed
 	 */
-	protected static function _update($collection, $filter, $updates, $upsert=false, $multi=false) {
+	protected static function _update($collection, $filter, $updates, $upsert=false, $multi=true) {
 		/* set the variables */
 		$options = array(
 			'multiple' => $multi,
