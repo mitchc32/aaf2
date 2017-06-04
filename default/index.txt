@@ -1,0 +1,33 @@
+<?php
+
+/* turn on display errors */
+ini_set('display_errors', true);
+
+/* load the composer file */
+require 'vendor/autoload.php';
+
+/* ensure the session is active */
+if (session_id() == '') {
+    session_start();
+}
+
+/* get the environment from the server */
+$env = (\AAF\App::valid('SERVER_ROLE', $_SERVER)) ? strtolower($_SERVER['SERVER_ROLE']) : 'dev';
+
+/* set the environment - must reflect a config environment */
+\AAF\App::create('config/env.json', $env);
+
+/* set a constant for the environment */
+\AAF\App::$env['env'] = $env;
+
+/* process the routes */
+$response = \AAF\Http\Response::create();
+
+/* check for an unauthorized (401) response */
+if (\AAF\Http\Response::$httpCode == 401) {
+	header('Location: /login/?redirect='.urlencode($_SERVER['REQUEST_URI']));
+	exit();
+}
+
+/* finish up */
+die($response);

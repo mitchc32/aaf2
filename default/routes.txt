@@ -1,0 +1,7 @@
+{
+    "all": {
+        "url": "/*",
+		"handler": "Site.php",
+		"action": "_default"
+    }
+}

@@ -1,0 +1,40 @@
+<?php
+
+use AAF\App;
+use AAF\Controllers\BaseController;
+use AAF\Database\MDB;
+
+class Site extends BaseController {
+    
+    public function _default() {
+        $name = $this->_getPageName();
+        if (!$name) {
+            $name = 'home';
+        }
+        
+        $template = 'website/' . $name . '.html.twig';
+        
+        if (!file_exists('views/' . $template)) {
+            $template = 'website/404.html.twig';
+        }
+        
+    	return $this->render([
+    	    'activePage' => $name
+    	], $template);
+    }
+    
+    protected function _getPageName() {
+        $matches = [];
+        
+        if (!preg_match('~/([\w\-]+)(?:/)?~i', $_SERVER['REQUEST_URI'], $matches)) {
+            return false;
+        }
+        
+        if (empty($matches)) {
+            return false;
+        }
+        
+        return $matches[1];
+    }
+    
+}

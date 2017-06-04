@@ -1,0 +1,20 @@
+# Ensure that symbolic links are enabled in apache.
+Options FollowSymlinks
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Serve the requested file if it exists
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ - [L]
+
+    # Rewrite all other queries to the front controller.
+    RewriteRule .* index.php [L]
+</IfModule>
+
+<IfModule !mod_rewrite.c>
+    <IfModule mod_alias.c>
+        # Fall back when mod rewrite is not available.
+        RedirectMatch 302 ^/$ /index.php/
+    </IfModule>
+</IfModule>
