@@ -94,10 +94,15 @@ if (!file_put_contents($data['directory'] . 'controllers/Site.php', file_get_con
     die("ERROR: Could not create file $data[directory]controllers/Site.php \n");
 }
 
+// create the composer.json file
+if (!file_put_contents($data['directory'] . 'composer.json', file_get_contents(__DIR__ . '/default/composer.txt'))) {
+    die("ERROR: Could not create file $data[directory]composer.php \n");
+}
+
 // clean it all up
 chmod($data['directory'], 0775);
 
-echo "PROJECT SUCCESSFULLY CREATED\n\n";
+echo "Project successfully created! Make sure to run composer update in $data[directory]\n\n";
 
 
 
