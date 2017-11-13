@@ -141,6 +141,25 @@ class TwigEnvExtension extends \Twig_Extension {
 				$bytes /= pow(1024, $pow);
 
 				return round($bytes, $precision) . ' ' . $units[$pow];
+			}),
+			
+			new \Twig_SimpleFunction('controller', function($controller, $action='', $params=[]) {
+				try {
+					/* use the plugin factory method to create an instance of the handler
+					using the route details */
+					$plugin = BaseController::create($controller);
+					
+					/* check that the action isn't empty and exists in the class before
+					trying execute it. */
+					if (!empty($action) && method_exists($plugin, $action)) {
+						return call_user_func_array(array($plugin, $action), $params);
+					}
+					
+					/* call the default method */
+					return (string) $plugin->_default();
+				} catch (\BaseControllerException $e) {
+					return '<pre>ERROR: ' . $e->getMessage() . '</pre>';
+				}
 			})
             
         ];
