@@ -722,7 +722,7 @@ class MDB {
 	 * 
 	 * array(
 	 * 	array('insert', array('field'=>1, 'field'=>2)),
-	 * 	array('update', array('filter'=>1), array('$set'=>array('field'=>3))),
+	 * 	array('update', array('filter'=>1), array('$set'=>array('field'=>3)), array('upsert' => true/false),
 	 * 	array('delete', array('filter'=>1))
 	 * )
 	 * 
@@ -757,7 +757,9 @@ class MDB {
 					
 					case 'update':
 						if (App::valid(array(1, 2), $action)) {
-							$bulk->update($action[1], $action[2]);
+							$opts = (App::valid(3, $action) && is_array($action)) ? $action[3] : [];
+							
+							$bulk->update($action[1], $action[2], $opts);
 						}
 						break;
 					
@@ -786,7 +788,7 @@ class MDB {
 			
 			/* wrap it up */
 			return App::success(array(
-				'inserts' => $resp->getInsertedCount(),
+				'inserts' => (int) $resp->getInsertedCount() + (int) $resp->getUpsertedCount(),
 				'updates' => $resp->getModifiedCount(),
 				'deletes' => $resp->getDeletedCount()
 			));
