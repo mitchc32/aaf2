@@ -217,6 +217,11 @@ class MDB {
 	 */
 	protected static function _command($database, $config, $asCursor=false) {
 		try {
+			/* add the cursor flag to the config */
+			if ($asCursor) {
+				$config['cursor'] = new \stdClass;
+			}
+			
 			/* create the new command object */
 			$command = new \MongoDB\Driver\Command($config);
 			
