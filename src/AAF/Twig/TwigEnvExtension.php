@@ -83,8 +83,8 @@ class TwigEnvExtension extends \Twig_Extension {
             
             new \Twig_SimpleFunction('datetime', function($dt, $format='m/d/Y h:i A'){
             	switch (true) {
-            		case (is_object($dt) && $dt instanceof MongoDB\BSON\UTCDateTime):
-            			return date($format, MDB::sec($dt));
+            		case (is_object($dt) && $dt instanceof \MongoDB\BSON\UTCDateTime):
+            			return date($format, \AAF\Database\MDB::sec($dt));
             			break;
            			
            			case (is_int($dt) || (is_string($dt) && (int) $dt > 0)):
